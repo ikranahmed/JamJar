@@ -1,116 +1,168 @@
-import Tech, { ITech } from '../models/User.js';
-import Matchup, { IMatchup } from '../models/Playlist.js';
-import Playlist from '../models/Playlist';
-import User from '../models/User';
-import { AuthenticationError } from 'apollo-server-express';
-import { signToken } from '../utils/auth';
+import { User } from '../models/index.js';
+import { signToken} from '../services/auth.js';
+import PlaylistModel from '../models/PlaylistModel.js';
+import { IResolvers } from '@graphql-tools/utils';
 
-const resolvers = {
-    Query: {
-      me: async (_, __, context) => {
-        if (!context.user) throw new AuthenticationError('Not logged in');
-        return User.findById(context.user._id).populate('playlists');
-      },
-  
-      getUserPlaylists: async (_, __, context) => {
-        if (!context.user) throw new AuthenticationError('Not logged in');
-        return Playlist.find({ createdBy: context.user._id });
-      },
-  
-      getPlaylistById: async (_, { playlistId }) => {
-        return Playlist.findById(playlistId).populate('createdBy');
-      },
-  
-      getPublicPlaylists: async () => {
-        return Playlist.find({ isPublic: true }).populate('createdBy');
-      },
-  
-      searchPlaylists: async (_, { tag }) => {
-        return Playlist.find({ isPublic: true, tags: tag }).populate('createdBy');
-      },
+
+interface AddUserArgs {
+  input: { 
+    username: string; 
+    email: string; 
+    password: string };
+}
+
+interface LoginArgs {
+  email: string;
+  password: string;
+}
+
+interface SongInput {
+  name: string;
+  artist: string;
+}
+
+interface PlaylistInput { 
+  name: string;
+  songs: SongInput[];
+}
+
+interface Playlist { 
+  name: string;
+  songs: SongInput[];
+  user: string;
+}
+
+const resolvers: IResolvers = {
+  Query: {
+    user: async (args: { username: string }) => {
+      const user = await User.findOne({ username: args.username }).populate('playlists.songs');
+      if (!user) throw new Error('User not found');
+      return user;
     },
 
-Mutations: {
-    addUser: async (_, { username, email, password }) => {
-        const user = await User.create({ username, email, password });
-        const token = signToken(user);
+  },
+
+  Mutation: {
+    addUser: async (_parent, { input }: AddUserArgs) => {
+      try {
+        const user = await User.create(input);
+        const token = signToken(user.username, user.email, user._id);
         return { token, user };
+      } catch (error) {
+        throw new Error('Error creating user: ');
+      }
     },
 
-    login: async (_, { email, password }) => {
-        const user = await User.findOne({ email });
-        if (!user || !(await user.isCorrectPassword(password))) {
-          throw new AuthenticationError('Invalid credentials');
-        }
-        const token = signToken(user);
-        return { token, user };
-      },
+    login: async ({ email, password }: LoginArgs): Promise<any> => {
+      try {
+          const user = await User.findOne({ email });
+          if (!user) {
+              throw new Error('No user found with this email address');
+          }
+          const isCorrectPassword = await user.isCorrectPassword(password);
+          if (!isCorrectPassword) {
+              throw new Error('Incorrect password');
+          }
+          const token = signToken(user.username, user.email, user._id);
+          return { token, user };
+      } catch (error) {
+          throw new Error('Error logging in: ')
+      }
+    },
 
-      addPlaylist: async (_, { title, description, tags, isPublic }, context) => {
-        if (!context.user) throw new AuthenticationError('Not logged in');
-        const playlist = await Playlist.create({
-          title,
-          description,
-          tags,
-          isPublic,
-          createdBy: context.user._id,
-          songs: [],
+    addPlaylist: async (_parent, { input }: { input: PlaylistInput }, context: any): Promise<Playlist> => {
+      if (!context.user) {
+        throw new Error('You need to be logged in to add a playlist!');
+      }
+    
+      const { name, songs } = input;
+    
+      try {
+        const newPlaylist = await PlaylistModel.create({
+          name,
+          songs,
+          user: context.user._id,
         });
-        await User.findByIdAndUpdate(context.user._id, { $push: { playlists: playlist._id } });
-        return playlist;
-      },
+    
+        return newPlaylist; // This should conform to the Playlist interface
+      } catch (error) {
+        console.error('Error saving playlist');
+        throw new Error('Error saving playlist');
+      }
+    },
 
-      updatePlaylist: async (_, { playlistId, title, description, tags, isPublic }, context) => {
-        if (!context.user) throw new AuthenticationError('Not logged in');
+    addSong: async (_parent, { songInput }: { songInput: SongInput }, context: any) => {
+      if (!context.user) {
+          throw new Error('You need to be logged in to add a song!');
+      }
   
-        const playlist = await Playlist.findOneAndUpdate(
-          { _id: playlistId, createdBy: context.user._id },
-          { title, description, tags, isPublic },
-          { new: true }
-        );
+      const { name, artist } = songInput;
   
-        if (!playlist) throw new AuthenticationError('Playlist not found or unauthorized');
-        return playlist;
-      },
+      try {
+          const updatedPlaylist = await PlaylistModel.findOneAndUpdate(
+              { user: context.user._id },
+              { $push: { songs: { name, artist } } },
+              { new: true }
+          );
+  
+          if (!updatedPlaylist) {
+              throw new Error('Playlist not found or you do not have permission to modify it.');
+          }
+  
+          return updatedPlaylist; // Return the updated playlist
+      } catch (error) {
+          console.error('Error saving song:', error);
+          throw new Error('Error saving song: ' + error.message);
+      }
+  }
+    },
 
-      deletePlaylist: async (_, { playlistId }, context) => {
-        if (!context.user) throw new AuthenticationError('Not logged in');
+    removeSong: async ({ songInput }: { songInput: SongInput }, context: any) => {
+      if (!context.user) {
+          throw new Error('You need to be logged in to remove a song!');
+      }
   
-        const deleted = await Playlist.findOneAndDelete({
-          _id: playlistId,
-          createdBy: context.user._id,
-        });
+      const { name, artist } = songInput;
   
-        await User.findByIdAndUpdate(context.user._id, {
-          $pull: { playlists: playlistId },
-        });
+      try {
+          const updatedPlaylist = await PlaylistModel.findOneAndUpdate(
+              { user: context.user._id },
+              { $pull: { songs: { name, artist } } },
+              { new: true }
+          );
   
-        return deleted;
-      },
-      addSong: async (_, { playlistId, title, artist, link }, context) => {
-        if (!context.user) throw new AuthenticationError('Not logged in');
+          if (!updatedPlaylist) {
+              throw new Error('Playlist not found or you do not have permission to modify it.');
+          }
   
-        const playlist = await Playlist.findOneAndUpdate(
-          { _id: playlistId, createdBy: context.user._id },
-          { $push: { songs: { title, artist, link } } },
-          { new: true }
-        );
-  
-        if (!playlist) throw new AuthenticationError('Playlist not found or unauthorized');
-        return playlist;
-      },
-  
-      removeSong: async (_, { playlistId, songId }, context) => {
-        if (!context.user) throw new AuthenticationError('Not logged in');
-  
-        const playlist = await Playlist.findOneAndUpdate(
-          { _id: playlistId, createdBy: context.user._id },
-          { $pull: { songs: { _id: songId } } },
-          { new: true }
-        );
-  
-        return playlist;
-      },
-      },
-    }
+          return updatedPlaylist;
+      } catch (error) {
+          console.error('Error removing song');
+          throw new Error('Error removing song');
+      }
+  },
 
+    removePlaylist: async (_parent, { playlistName }, context) => {
+      if (!context.user) {
+          throw new Error('You need to be logged in to remove a playlist!');
+      }
+  
+      try {
+          const deletedPlaylist = await PlaylistModel.findOneAndDelete({
+              name: playlistName,
+              user: context.user._id,
+          });
+  
+          if (!deletedPlaylist) {
+              throw new Error('Playlist not found or you do not have permission to modify it.');
+          }
+  
+          return deletedPlaylist;
+      } catch (error) {
+          console.error('Error deleting playlist');
+          throw new Error('Error deleting playlist:');
+      }
+    },
+  }
+
+export { resolvers };
