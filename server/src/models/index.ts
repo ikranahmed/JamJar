@@ -1,4 +1,4 @@
-import User from './User';
-import Playlistmodel from './Playlist';
+import User from './User.js';
+import Playlistmodel from './Playlist.js';
 
 export { User, Playlistmodel };

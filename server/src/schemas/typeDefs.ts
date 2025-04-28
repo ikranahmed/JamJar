@@ -14,7 +14,7 @@ const typeDefs = `
   }
 
   type Song {
-    // id: ID!
+     id: ID!
     name: String!
     artist: String!
   }
