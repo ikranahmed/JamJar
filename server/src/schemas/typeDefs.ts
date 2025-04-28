@@ -1,55 +1,52 @@
 const typeDefs = `
   type User {
-    _id: ID!
+    id: ID!
     username: String!
     email: String!
     playlists: [Playlist]
   }
 
-  type Auth {
-    token: ID!
+  type Playlist {
+    id: ID!
+    name: String!
+    songs: [Song!]!
     user: User!
   }
 
-  type Playlist {
-    _id: ID!
-    title: String!
-    description: String
-    tags: [String]
-    isPublic: Boolean
-    createdBy: User!
-    songs: [Song]
+  type Song {
+    // id: ID!
+    name: String!
+    artist: String!
   }
 
-  type Song {
-    _id: ID!
-    title: String!
-    artist: String
-    link: String!
+  type AuthPayload {
+    token: String!
+    user: User!
   }
 
   type Query {
+    user(username: String!): User
     me: User
-    getUserPlaylists: [Playlist]
-    getPlaylistById(playlistId: ID!): Playlist
-    getPublicPlaylists: [Playlist]
-    searchPlaylists(tag: String!): [Playlist]
   }
 
   type Mutation {
-    # Auth
-    login(email: String!, password: String!): Auth
-    addUser(username: String!, email: String!, password: String!): Auth
+    addUser(input: AddUserInput!): AuthPayload
+    login(email: String!, password: String!): AuthPayload
+    addPlaylist(name: String!): Playlist
+    removePlaylist(playlistName: String!): Playlist
+    addSong(playlistName: String!, songInput: SongInput!): Song
+    removeSong(playlistName: String!, songInput: SongInput!): Song
+  }
 
-    # Playlist management
-    addPlaylist(title: String!, description: String, tags: [String], isPublic: Boolean): Playlist
-    updatePlaylist(playlistId: ID!, title: String, description: String, tags: [String], isPublic: Boolean): Playlist
-    deletePlaylist(playlistId: ID!): Playlist
+  input AddUserInput {
+    username: String!
+    email: String!
+    password: String!
+  }
 
-    # Song management
-    addSong(playlistId: ID!, title: String!, artist: String, link: String!): Playlist
-    removeSong(playlistId: ID!, songId: ID!): Playlist
-
+  input SongInput {
+    name: String!
+    artist: String!
   }
 `;
 export default typeDefs;

@@ -1,54 +1,42 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 import bcrypt from 'bcrypt';
+import { PlaylistDocument } from './Playlist';
 
-const userSchema = new Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
+
+export interface UserDocument extends Document {
+  username: string;
+  email: string;
+  password: string;
+  playlists: PlaylistDocument[];
+  isCorrectPassword(password: string): Promise<boolean>;
+}
+
+const userSchema = new Schema<UserDocument>(
+  {
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true, match: [/.+@.+\..+/, 'Must use a valid email address'] },
+    password: { type: String, required: true },
+    playlists: [{ type: Schema.Types.ObjectId, ref: 'Playlist' }],
   },
+  {
+    toJSON: { virtuals: true },
+  }
+);
 
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    match: [/.+@.+\..+/, 'Must be a valid email address'],
-  },
-
-  password: {
-    type: String,
-    required: true,
-    minlength: 6,
-  },
-
-  playlists: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Playlist',
-    }
-  ],
-
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-// Hash user password before saving
 userSchema.pre('save', async function (next) {
   if (this.isNew || this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
+    const saltRounds = 10;
+    this.password = await bcrypt.hash(this.password, saltRounds);
   }
+
   next();
 });
 
-// Password validation method
-userSchema.methods.isCorrectPassword = async function (password) {
+userSchema.methods.isCorrectPassword = async function (password: string) {
   return bcrypt.compare(password, this.password);
 };
 
-const User = model('User', userSchema);
+const User = model<UserDocument>('User', userSchema);
 
-module.exports = User;
+export default User;
 

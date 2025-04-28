@@ -1,71 +1,36 @@
-import { Schema, model } from 'mongoose';
+import mongoose from 'mongoose';
 
-const songSchema = new Schema({
-  title: {
-    type: String,
-    required: true,
-  },
+export interface PlaylistDocument extends Document {
+  name: string;
+  songs: Song[];
+  user: string;
+}
 
-  artist: {
-    type: String,
-    required: true,
-  },
+export interface Song {
+    name: string;
+    artist: string;
+}
 
-  link: {
-    type: String,
-    required: true,
-  },
+export interface Playlist {
+    id: string;
+    name: string;
+    songs: Song[];
+    user: string;
+}
 
-  mood: {
-    type: String,
-    enum: ['chill', 'hype', 'sad', 'happy', 'study', 'party', 'other'],
-    default: 'other',
-  },
-
-  tags: [String],
-
-  addedAt: {
-    type: Date,
-    default: Date.now,
-  }
+const songSchema = new mongoose.Schema({
+    name: String,
+    artist: String,
 });
 
-const playlistSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-
-  description: {
-    type: String,
-  },
-
-  songs: [songSchema],
-
-  isPublic: {
-    type: Boolean,
-    default: false,
-  },
-
-  mood: {
-    type: String,
-    enum: ['chill', 'hype', 'sad', 'happy', 'study', 'party', 'other'],
-  },
-
-  createdBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  }
+const playlistSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    songs: [songSchema],
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 
-const Playlist = model('Playlist', playlistSchema);
+const PlaylistModel = mongoose.model('Playlist', playlistSchema);
 
-module.exports = Playlist;
+export default PlaylistModel;
 
 

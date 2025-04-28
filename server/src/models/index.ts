@@ -1,4 +1,4 @@
-import Tech from './User.js';
-import Matchup from './Playlist.js';
+import User from './User';
+import Playlistmodel from './Playlist';
 
-export default { Tech, Matchup };
+export { User, Playlistmodel };
