@@ -1,8 +1,9 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useMutation } from '@apollo/client';
 import Auth from '../../utils/auth';
+import { ADD_USER } from '../../utils/mutations';
 import './Signup.css';
-// import { GET_MY_PLAYLISTS } from '../../utils/mutations';
+
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -13,7 +14,8 @@ const Signup = () => {
 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    // const [login] = useMutation(GET_MY_PLAYLISTS);
+    
+    const [addUser] = useMutation(ADD_USER);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -26,18 +28,21 @@ const Signup = () => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError(null);
+        setLoading(true);
 
-        // try {
-        //   const { data } = await login({ variables: { ...formData } });
-        //   if (data?.login?.token) {
-        //     Auth.login(data.login.token);
-        //   } else {
-        //     setError("Invalid username or password.");
-        //   }
-        // } catch (err) {
-        //   setError("Login failed. Please try again.");
-        //   console.error("Failed to login", err);
-        // }
+        try {
+          const { data } = await addUser({ variables: { input: formData } });
+          if (data?.addUser?.token) {
+            Auth.login(data.addUser.token);
+          } else {
+            setError("Invalid username or password.");
+          }
+        } catch (err) {
+          setError("Login failed. Please try again.");
+          console.error("Failed to login", err);
+        } finally {
+          setLoading(false);
+        }
     };
 
     // Music-themed background video (replace with your actual video URL)
@@ -73,7 +78,7 @@ const Signup = () => {
                     {/* Form section */}
                     <div className="form-container">
                         <form className='form' onSubmit={handleSubmit}>
-                            <h1 className="login-text">Login</h1>
+                            <h1 className="login-text">Signup</h1>
 
                             {error && <p className="error-message">{error}</p>}
 

@@ -1,5 +1,31 @@
-// import { gql } from '@apollo/client';
+import { gql } from '@apollo/client';
 
+
+export const LOGIN_USER = gql`
+ mutation Login($email: String!, $password: String!) {
+  login(email: $email, password: $password) {
+    token
+    user {
+      email
+      id
+      username
+    }
+  }
+}
+`;
+
+export const ADD_USER = gql`
+mutation AddUser($input: AddUserInput!) {
+  addUser(input: $input) {
+    token
+    user {
+      id
+      username
+      email
+    }
+  }
+}
+`;
 // export const GET_MY_PLAYLISTS = gql`
 //   query GetMyPlaylists {
 //     me {
