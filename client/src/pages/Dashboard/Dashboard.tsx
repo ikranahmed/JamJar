@@ -109,6 +109,9 @@ const PlaylistsPage = () => {
                 onChange={(e) => setNewPlaylistName(e.target.value)}
                 autoFocus
               />
+              <button>Dance</button>
+              <button>Workout</button>
+              <button>Chill</button>
               <div className="modal-buttons">
                 <button 
                   className="cancel-btn"
