@@ -26,7 +26,7 @@ const songSchema = new mongoose.Schema({
 const playlistSchema = new mongoose.Schema({
     name: { type: String, required: true },
     songs: [songSchema],
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
 
 const PlaylistModel = mongoose.model('Playlist', playlistSchema);
