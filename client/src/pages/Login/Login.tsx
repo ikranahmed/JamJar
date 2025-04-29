@@ -11,7 +11,7 @@ const Login = () => {
   });
 
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   // const [login] = useMutation(GET_MY_PLAYLISTS);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

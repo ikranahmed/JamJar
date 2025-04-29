@@ -32,7 +32,8 @@ const NavBar = () => {
     { id: 'playlists', icon: <FaMusic />, label: 'Playlists' },
     { id: 'search', icon: <FaSearch />, label: 'Search' },
     { id: 'create', icon: <FaPlus />, label: 'Create' },
-    { id: 'profile', icon: <FaUser />, label: 'Profile' }
+    { id: 'profile', icon: <FaUser />, label: 'Profile' },
+    { id: 'login', icon: <FaUser />, label: 'Login' }
   ];
 
   const handleTabClick = (tabId: string) => {
@@ -40,6 +41,8 @@ const NavBar = () => {
     if (tabId === 'create') {
       // Handle create action directly
       console.log('Create new playlist');
+    } else if (tabId === 'home') {
+      navigate(`/`);
     } else {
       navigate(`/${tabId}`);
     }
