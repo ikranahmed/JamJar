@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_PLAYLISTS } from '../../utils/queries';
-import { FaPlay, FaPlus, FaSearch, FaShareAlt } from 'react-icons/fa';
+import { FaPlay, FaPlus, FaSearch, FaShareAlt, FaHome, FaMusic, FaUser } from 'react-icons/fa';
 import './Dashboard.css';
 
 const PlaylistsPage = () => {
@@ -9,8 +9,9 @@ const PlaylistsPage = () => {
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
+  const [activeNav, setActiveNav] = useState('playlists');
 
-  // Mock data structure that matches your mocks.ts
+  // Mock data structure from mock.ts file
   const mockPlaylists = data?.playlists || Array.from({ length: 4 }, (_, i) => ({
     id: `mock-${i}`,
     name: ['Workout Mix', 'Chill Vibes', 'Focus Flow', 'Road Trip'][i],
@@ -56,45 +57,114 @@ const PlaylistsPage = () => {
           <h2>My Playlists</h2>
           <div className="playlists-grid">
             {mockPlaylists.map((playlist) => (
-              <div key={playlist.id} className="playlist-card">
-                <h3>{playlist.name}</h3>
-                <ul>
+              <div 
+                key={playlist.id} 
+                className={`playlist-card ${selectedPlaylist === playlist.id ? 'active' : ''}`}
+                onClick={() => setSelectedPlaylist(playlist.id)}
+              >
+                <div className="playlist-header">
+                  <h3>{playlist.name}</h3>
+                  <p>{playlist.songs.length} songs</p>
+                </div>
+                <ul className="songs-list">
                   {playlist.songs.map((song) => (
                     <li key={song.id} className="song-item">
-                      <span>{song.title} - {song.artist}</span>
-                      <button onClick={() => handlePlaySong(song.link)}>
+                      <div className="song-info">
+                        <span className="song-title">{song.title}</span>
+                        <span className="song-artist">{song.artist}</span>
+                      </div>
+                      <button 
+                        className="play-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePlaySong(song.link);
+                        }}
+                      >
                         <FaPlay />
                       </button>
                     </li>
                   ))}
                 </ul>
-                <button className="remove-btn" onClick={() => setSelectedPlaylist(playlist.id)}>
-                  Remove Playlist
-                </button>
               </div>
             ))}
-            <button className="add-playlist-btn" onClick={() => setShowCreateForm(true)}>
-              <FaPlus /> Create New Playlist
-            </button>
+
+            <div 
+              className="create-playlist-card"
+              onClick={() => setShowCreateForm(true)}
+            >
+              <FaPlus className="plus-icon" />
+              <span>Create Playlist</span>
+            </div>
           </div>
-          {showCreateForm && (
-            <div className="create-playlist-form">
+        </div>
+
+        {showCreateForm && (
+          <div className="create-playlist-modal">
+            <div className="modal-content">
+              <h2>Create New Playlist</h2>
               <input
                 type="text"
+                placeholder="Name of Playlist"
                 value={newPlaylistName}
                 onChange={(e) => setNewPlaylistName(e.target.value)}
-                placeholder="New Playlist Name"
+                autoFocus
               />
-              <button onClick={handleCreatePlaylist}>Create</button>
+              <div className="modal-buttons">
+                <button 
+                  className="cancel-btn"
+                  onClick={() => setShowCreateForm(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="create-btn"
+                  onClick={handleCreatePlaylist}
+                  disabled={!newPlaylistName.trim()}
+                >
+                  Create
+                </button>
+              </div>
             </div>
-          )}
-        </div>
-        <footer className="dashboard-footer">
-          <p>© {new Date().getFullYear()} Playlist Pal - Your Music, Your Way</p>
-        </footer>
+          </div>
+        )}
       </div>
+
+      {/* Navigation Bar */}
+      <nav className="navbar">
+        <div 
+          className={`nav-item ${activeNav === 'home' ? 'active' : ''}`}
+          onClick={() => setActiveNav('home')}
+        >
+          <FaHome className="nav-icon" />
+          <span className="nav-label">Home</span>
+        </div>
+        <div 
+          className={`nav-item ${activeNav === 'playlists' ? 'active' : ''}`}
+          onClick={() => setActiveNav('playlists')}
+        >
+          <FaMusic className="nav-icon" />
+          <span className="nav-label">Playlists</span>
+        </div>
+        <div 
+          className={`nav-item ${activeNav === 'create' ? 'active' : ''}`}
+          onClick={() => {
+            setActiveNav('create');
+            setShowCreateForm(true);
+          }}
+        >
+          <FaPlus className="nav-icon" />
+          <span className="nav-label">Create</span>
+        </div>
+        <div 
+          className={`nav-item ${activeNav === 'profile' ? 'active' : ''}`}
+          onClick={() => setActiveNav('profile')}
+        >
+          <FaUser className="nav-icon" />
+          <span className="nav-label">Profile</span>
+        </div>
+      </nav>
     </div>
   );
-}
+};
 
 export default PlaylistsPage;
