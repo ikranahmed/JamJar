@@ -1,18 +1,19 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useMutation } from '@apollo/client';
 import Auth from '../../utils/auth';
+import { LOGIN_USER } from '../../utils/mutations';
 import './Login.css';
-// import { GET_MY_PLAYLISTS } from '../../utils/mutations';
+
 
 const Login = () => {
   const [loginData, setLoginData] = useState({
-    username: '',
+    email: '',
     password: ''
   });
 
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  // const [login] = useMutation(GET_MY_PLAYLISTS);
+  const [loading, setLoading] = useState(false);
+  const [login] = useMutation(LOGIN_USER);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,18 +26,21 @@ const Login = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
-    // try {
-    //   const { data } = await login({ variables: { ...loginData } });
-    //   if (data?.login?.token) {
-    //     Auth.login(data.login.token);
-    //   } else {
-    //     setError("Invalid username or password.");
-    //   }
-    // } catch (err) {
-    //   setError("Login failed. Please try again.");
-    //   console.error("Failed to login", err);
-    // }
+    try {
+      const { data } = await login({ variables: { ...loginData } });
+      if (data?.login?.token) {
+        Auth.login(data.login.token);
+      } else {
+        setError("Invalid email or password.");
+      }
+    } catch (err) {
+      setError("Login failed. Please try again.");
+      console.error("Failed to login", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Music-themed background video (replace with your actual video URL)
@@ -76,11 +80,11 @@ const Login = () => {
 
               {error && <p className="error-message">{error}</p>}
 
-              <label className="input-label">Username:</label>
+              <label className="input-label">Email:</label>
               <input 
-                type='text'
-                name='username'
-                value={loginData.username}
+                type='email'
+                name='email'
+                value={loginData.email}
                 onChange={handleChange}
                 className="login-input"
               />

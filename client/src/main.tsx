@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import NotFound from './pages/NotFound';
 import Login from './pages/Login/Login';
 import MyPlaylistPage from './pages/MyPlaylist/MyPlaylistPage';
+import Signup from './pages/Signup/Signup';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
         {
           path: '/login',
           element: <Login />
+        },
+        {
+          path: '/signup',
+          element: <Signup />
         },
         {
           path: '/my-playlists/:playlistId',

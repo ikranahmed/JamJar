@@ -16,7 +16,8 @@ const server = new ApolloServer({
   // resolvers,
   schema: addMocksToSchema({
     schema: makeExecutableSchema({ typeDefs, resolvers }),
-    mocks
+    mocks,
+    preserveResolvers: true, // Preserve original resolvers while applying mocks
   }),
 });
 

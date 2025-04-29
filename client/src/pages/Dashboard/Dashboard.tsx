@@ -128,41 +128,6 @@ const PlaylistsPage = () => {
           </div>
         )}
       </div>
-
-      {/* Navigation Bar */}
-      <nav className="navbar">
-        <div 
-          className={`nav-item ${activeNav === 'home' ? 'active' : ''}`}
-          onClick={() => setActiveNav('home')}
-        >
-          <FaHome className="nav-icon" />
-          <span className="nav-label">Home</span>
-        </div>
-        <div 
-          className={`nav-item ${activeNav === 'playlists' ? 'active' : ''}`}
-          onClick={() => setActiveNav('playlists')}
-        >
-          <FaMusic className="nav-icon" />
-          <span className="nav-label">Playlists</span>
-        </div>
-        <div 
-          className={`nav-item ${activeNav === 'create' ? 'active' : ''}`}
-          onClick={() => {
-            setActiveNav('create');
-            setShowCreateForm(true);
-          }}
-        >
-          <FaPlus className="nav-icon" />
-          <span className="nav-label">Create</span>
-        </div>
-        <div 
-          className={`nav-item ${activeNav === 'profile' ? 'active' : ''}`}
-          onClick={() => setActiveNav('profile')}
-        >
-          <FaUser className="nav-icon" />
-          <span className="nav-label">Profile</span>
-        </div>
-      </nav>
     </div>
   );
 };
