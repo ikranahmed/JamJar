@@ -1,23 +1,54 @@
-import { gql } from '@apollo/client';
+// import { gql } from '@apollo/client';
 
-export const CREATE_MATCHUP = gql`
-  mutation createMatchup($tech1: String!, $tech2: String!) {
-    createMatchup(tech1: $tech1, tech2: $tech2) {
-      _id
-      tech1
-      tech2
-    }
-  }
-`;
+// export const GET_MY_PLAYLISTS = gql`
+//   query GetMyPlaylists {
+//     me {
+//       _id
+//       username
+//       playlists {
+//         _id
+//         name
+//         songCount
+//         createdAt
+//       }
+//     }
+//   }
+// `;
 
-export const CREATE_VOTE = gql`
-  mutation createVote($_id: String!, $techNum: Int!) {
-    createVote(_id: $_id, techNum: $techNum) {
-      _id
-      tech1
-      tech2
-      tech1_votes
-      tech2_votes
-    }
-  }
-`;
+// export const GET_PLAYLIST = gql`
+//   query GetPlaylist($playlistId: ID!) {
+//     playlist(playlistId: $playlistId) {
+//       _id
+//       name
+//       songs {
+//         _id
+//         title
+//         artist
+//         duration
+//         link
+//       }
+//     }
+//   }
+// `;
+
+// export const REMOVE_SONG_FROM_PLAYLIST = gql`
+//   mutation RemoveSongFromPlaylist($playlistId: ID!, $songId: ID!) {
+//     removeSongFromPlaylist(playlistId: $playlistId, songId: $songId) {
+//       _id
+//       name
+//       songs {
+//         _id
+//         title
+//       }
+//     }
+//   }
+// `;
+
+// export const CREATE_PLAYLIST = gql`
+//   mutation CreatePlaylist($name: String!) {
+//     createPlaylist(name: $name) {
+//       _id
+//       name
+//     }
+//   }
+// `;

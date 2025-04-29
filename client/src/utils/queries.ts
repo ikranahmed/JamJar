@@ -1,10 +1,33 @@
 import { gql } from '@apollo/client';
 
-export const QUERY_TECH = gql`
-  query tech {
-    tech {
-      _id
+export const GET_PLAYLISTS = gql`
+  query getPlaylists {
+    playlists {
+      id
       name
+      songs {
+        artist
+        duration
+        id
+        link
+        title
+      }
+    }
+  }
+`;
+
+export const GET_PLAYLIST = gql`
+  query getPlaylist($playlistId: ID!) {
+    playlist(playlistId: $playlistId) {
+      id
+      name
+      songs {
+        artist
+        duration
+        id
+        link
+        title
+      }
     }
   }
 `;
