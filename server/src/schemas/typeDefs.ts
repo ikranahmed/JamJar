@@ -48,7 +48,7 @@ const typeDefs = `
   }
 
   input SongInput {
-    name: String!
+    title: String!
     artist: String!
   }
 `;
