@@ -3,8 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import App from './App';
 import Dashboard from './pages/Dashboard/Dashboard';
-import Matchup from './pages/Matchup';
-import Vote from './pages/Vote';
+
 import NotFound from './pages/NotFound';
 import Login from './pages/Login/Login';
 import MyPlaylistPage from './pages/MyPlaylist/MyPlaylistPage';
@@ -24,16 +23,9 @@ const router = createBrowserRouter([
           element: <Login />
         },
         {
-          path: '/my-playlists',
+          path: '/my-playlists/:playlistId',
           element: <MyPlaylistPage />
         },
-      {
-        path: '/matchup',
-        element: <Matchup />
-      }, {
-        path: '/matchup/:id',
-        element: <Vote />
-      },
     ],
   },
 ]);

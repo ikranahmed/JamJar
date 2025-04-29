@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_MY_PLAYLISTS } from '../../utils/queries';
+// import { GET_MY_PLAYLISTS } from '../../utils/queries';
 import { FaPlay, FaPlus, FaEllipsisH, FaSearch } from 'react-icons/fa';
 // import { FaPlus, FaSearch } from 'react-icons/fa';
-import '<div className="" />
-<Dashboard></Dashboard>.css';
+import './Dashboard.css';
 
 const PlaylistsPage = () => {
-  const { loading, error, data } = useQuery(GET_MY_PLAYLISTS);
+  // const { loading, error, data } = useQuery(GET_MY_PLAYLISTS);
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
 

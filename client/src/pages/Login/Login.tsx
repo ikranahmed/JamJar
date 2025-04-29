@@ -1,8 +1,8 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import { useMutation } from '@apollo/client';
-import { CREATE_MATCHUP } from '../../utils/mutations';
 import Auth from '../../utils/auth';
 import './Login.css';
+// import { GET_MY_PLAYLISTS } from '../../utils/mutations';
 
 const Login = () => {
   const [loginData, setLoginData] = useState({
@@ -12,7 +12,7 @@ const Login = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [login] = useMutation(CREATE_MATCHUP);
+  // const [login] = useMutation(GET_MY_PLAYLISTS);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,17 +26,17 @@ const Login = () => {
     e.preventDefault();
     setError(null);
 
-    try {
-      const { data } = await login({ variables: { ...loginData } });
-      if (data?.login?.token) {
-        Auth.login(data.login.token);
-      } else {
-        setError("Invalid username or password.");
-      }
-    } catch (err) {
-      setError("Login failed. Please try again.");
-      console.error("Failed to login", err);
-    }
+    // try {
+    //   const { data } = await login({ variables: { ...loginData } });
+    //   if (data?.login?.token) {
+    //     Auth.login(data.login.token);
+    //   } else {
+    //     setError("Invalid username or password.");
+    //   }
+    // } catch (err) {
+    //   setError("Login failed. Please try again.");
+    //   console.error("Failed to login", err);
+    // }
   };
 
   // Music-themed background video (replace with your actual video URL)

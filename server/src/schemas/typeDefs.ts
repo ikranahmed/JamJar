@@ -9,14 +9,15 @@ const typeDefs = `
   type Playlist {
     id: ID!
     name: String!
-    songs: [Song!]!
-    user: User!
+    songs: [Song]
   }
 
   type Song {
-     id: ID!
-    name: String!
+    id: ID!
+    title: String!
     artist: String!
+    duration: Int
+    link: String
   }
 
   type AuthPayload {
@@ -27,6 +28,8 @@ const typeDefs = `
   type Query {
     user(username: String!): User
     me: User
+    playlists: [Playlist]
+    playlist(playlistId: ID!): Playlist
   }
 
   type Mutation {

@@ -6,10 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "prestart": "npm run build",
-    "prewatch": "npm run build",
     "start": "node dist/server.js",
-    "watch": "nodemon dist/server.js",
+    "watch": "npx nodemon",
+    "dev": "npm run watch",
     "seed": "node dist/seeds/seed.js"
   },
   "author": "",
@@ -17,6 +16,7 @@
   "dependencies": {
     "@apollo/server": "^4.10.4",
     "bcrypt": "^5.1.1",
+    "casual": "^1.6.2",
     "dotenv": "^16.5.0",
     "express": "^4.19.2",
     "graphql": "^16.9.0",
@@ -24,9 +24,16 @@
     "mongoose": "^8.4.3"
   },
   "devDependencies": {
+    "@graphql-tools/mock": "^9.0.22",
+    "@graphql-tools/schema": "^10.0.23",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "nodemon": "^3.1.4",
     "typescript": "^5.5.2"
+  },
+  "nodemonConfig": {
+    "watch": ["src"],
+    "ext": "ts,js,json",
+    "exec": "npx tsc && node dist/server.js"
   }
 }
