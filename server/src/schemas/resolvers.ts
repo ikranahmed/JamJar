@@ -41,10 +41,12 @@ const resolvers: IResolvers = {
   Mutation: {
     addUser: async (_parent, { input }: AddUserArgs) => {
       try {
+        console.log('Creating user with input:', input);
         const user = await User.create(input);
         const token = signToken(user.username, user.email, user._id);
         return { token, user };
       } catch (error) {
+        console.log('Error creating user:', error);
         throw new Error('Error creating user');
       }
     },
