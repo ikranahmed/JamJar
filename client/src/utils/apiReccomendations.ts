@@ -21,3 +21,12 @@ export async function getArtistsTrack(artistID:string) {
 
 } 
 
+// 		bruno mars	"id": "a46a685c-dfd6-48b8-811c-1dd953622918",
+
+
+
+// green day id: 3c5b96e0-f07a-43f7-b452-be73fa62aa37
+
+// miley id a4707ae0-7c9d-40d7-a2bc-c7010d5bd693 
+
+// taylor swift id: c7b330b5-a62e-420c-bf02-943ca6bb8746
