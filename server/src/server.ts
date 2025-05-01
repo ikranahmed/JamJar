@@ -1,25 +1,18 @@
 import express from 'express';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
-import { addMocksToSchema } from '@graphql-tools/mock';
-import { makeExecutableSchema } from '@graphql-tools/schema';
 import path from 'path';
 
-import { typeDefs, resolvers, mocks } from './schemas/index.js';
+import { typeDefs, resolvers } from './schemas/index.js';
 import db from './config/connection.js';
 import { authenticateToken } from './services/auth.js';
 
 const PORT = process.env.PORT || 3001;
 const app = express();
 const server = new ApolloServer({
-  // typeDefs,
-  // resolvers,
-  schema: addMocksToSchema({
-    schema: makeExecutableSchema({ typeDefs, resolvers }),
-    mocks,
-    preserveResolvers: true, // Preserve original resolvers while applying mocks
-  }),
-});
+  typeDefs,
+  resolvers,
+  });
 
 const startApolloServer = async () => {
   await server.start();
