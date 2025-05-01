@@ -1,19 +1,17 @@
 const typeDefs = `
   type User {
-    id: ID!
     username: String!
     email: String!
     playlists: [Playlist]
   }
 
   type Playlist {
-    id: ID!
     name: String!
     songs: [Song]
+    user: User!
   }
 
   type Song {
-    id: ID!
     title: String!
     artist: String!
     duration: Int
@@ -35,7 +33,7 @@ const typeDefs = `
   type Mutation {
     addUser(input: AddUserInput!): AuthPayload
     login(email: String!, password: String!): AuthPayload
-    addPlaylist(name: String!): Playlist
+    addPlaylist(input: PlaylistInput!): Playlist
     removePlaylist(playlistName: String!): Playlist
     addSong(playlistName: String!, songInput: SongInput!): Song
     removeSong(playlistName: String!, songInput: SongInput!): Song
@@ -47,9 +45,16 @@ const typeDefs = `
     password: String!
   }
 
+  input PlaylistInput {
+  name: String!
+  songs: [SongInput]
+  }
+
   input SongInput {
     title: String!
     artist: String!
+    duration: Int
+    link: String
   }
 `;
 export default typeDefs;
