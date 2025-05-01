@@ -139,7 +139,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <h1>Playlist Pal</h1>
+        <h1>Welcome to JamJar</h1>
         <button className="share-btn">
           <FaShareAlt />
         </button>
