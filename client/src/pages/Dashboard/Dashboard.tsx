@@ -8,16 +8,10 @@
 
 import { useState, useEffect } from 'react';
 import { FaPlay, FaPlus, FaMinus, FaSearch, FaShareAlt, FaTrash } from 'react-icons/fa';
-import { getArtistTracks, ARTIST_IDS } from '../../utils/apiReccomendations';
+import { getArtistsTrack, ARTIST_IDS } from '../../utils/apiReccomendations';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
-
-interface Track {
-  id: string;
-  title: string;
-  artist: string;
-  duration?: number;
-  link?: string;
-}
+import type { Track } from '../../utils/apiReccomendations';
 
 interface Playlist {
   id: string;
@@ -26,6 +20,7 @@ interface Playlist {
 }
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   // State management
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [newPlaylistName, setNewPlaylistName] = useState('');
@@ -69,13 +64,13 @@ const Dashboard = () => {
     setTrackError(null);
     
     try {
-      const response = await getArtistTracks(ARTIST_IDS[artist]);
+      const response = await getArtistsTrack(ARTIST_IDS[artist]);
       
-      if (response.error || !response.data) {
-        throw new Error(response.error || 'No tracks received from API');
+       if (!response.content) {
+        throw new Error( 'No tracks received from API');
       }
 
-      setTracks(response.data.map(track => ({ ...track, selected: false })));
+      setTracks(response.content.map(track => ({ ...track, selected: false })));
     } catch (err) {
       setTrackError(err instanceof Error ? err.message : 'Failed to load tracks');
       setTracks([]);
@@ -117,7 +112,8 @@ const Dashboard = () => {
   };
 
   // Playlist management
-  const deletePlaylist = (id: string) => {
+  const deletePlaylist = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     setPlaylists(playlists.filter(playlist => playlist.id !== id));
   };
 
@@ -131,7 +127,7 @@ const Dashboard = () => {
   const filteredPlaylists = playlists.filter(playlist =>
     playlist.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     playlist.tracks.some(track =>
-      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      track.trackTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
       track.artist.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
@@ -139,7 +135,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <h1>Playlist Pal</h1>
+        <h1>Welcome to JamJar</h1>
         <button className="share-btn">
           <FaShareAlt />
         </button>
@@ -163,14 +159,18 @@ const Dashboard = () => {
           <div className="playlists-grid">
             {filteredPlaylists.length > 0 ? (
               filteredPlaylists.map((playlist) => (
-                <div key={playlist.id} className="playlist-card">
+                <div 
+                  key={playlist.id} 
+                  className="playlist-card"
+                  onClick={() => navigate(`/my-playlists/${playlist.id}`)}
+                >
                   <div className="playlist-header">
                     <h3>{playlist.name}</h3>
                     <div className="playlist-meta">
                       <span>{playlist.tracks.length} songs</span>
                       <button
                         className="delete-btn"
-                        onClick={() => deletePlaylist(playlist.id)}
+                        onClick={(e) => deletePlaylist(playlist.id, e)}
                         aria-label="Delete playlist"
                       >
                         <FaTrash />
@@ -181,7 +181,7 @@ const Dashboard = () => {
                     {playlist.tracks.map((track) => (
                       <li key={track.id} className="song-item">
                         <div className="song-info">
-                          <span className="song-title">{track.title}</span>
+                          <span className="song-title">{track.trackTitle}</span>
                           <span className="song-artist">{track.artist}</span>
                           {track.duration && (
                             <span className="song-duration">
@@ -192,7 +192,7 @@ const Dashboard = () => {
                         <button
                           className="play-btn"
                           onClick={() => playTrack(track.link)}
-                          aria-label={`Play ${track.title}`}
+                          aria-label={`Play ${track.trackTitle}`}
                         >
                           <FaPlay />
                         </button>
@@ -276,7 +276,7 @@ const Dashboard = () => {
                     {tracks.map((track) => (
                       <li key={track.id} className={`song-item ${track.selected ? 'selected' : ''}`}>
                         <div className="song-info">
-                          <span className="song-title">{track.title}</span>
+                          <span className="song-title">{track.trackTitle}</span>
                           <span className="song-artist">{track.artist}</span>
                           {track.duration && (
                             <span className="song-duration">
@@ -288,7 +288,7 @@ const Dashboard = () => {
                           <button
                             className="play-btn"
                             onClick={() => playTrack(track.link)}
-                            aria-label={`Play ${track.title}`}
+                            aria-label={`Play ${track.trackTitle}`}
                           >
                             <FaPlay />
                           </button>
