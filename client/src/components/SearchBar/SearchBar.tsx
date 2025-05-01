@@ -1,155 +1,73 @@
-// import { useState, useEffect, useRef } from 'react';
-// import { FaSearch, FaTimes } from 'react-icons/fa';
-// import { searchArtists, getArtistsTrack, Artist, Track } from '../../utils/apiReccomendations';
-// import './SearchBar.css';
+import React, { useState, useEffect } from 'react';
+import { searchArtists, Artist } from '../../utils/apiReccomendations';
+import './SearchBar.css';
 
-// interface SearchBarProps {
-//   onArtistSelect?: (artist: Artist) => void;
-//   onTrackSelect?: (track: Track) => void;
-//   placeholder?: string;
-// }
+const SearchBar = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<Artist[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-// const SearchBar = ({ onArtistSelect, onTrackSelect, placeholder = "Search for artists or songs..." }: SearchBarProps) => {
-//   const [query, setQuery] = useState('');
-//   const [results, setResults] = useState<(Artist | Track)[]>([]);
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [error, setError] = useState<string | null>(null);
-//   const [activeTab, setActiveTab] = useState<'artists' | 'tracks'>('tracks');
-//   const searchRef = useRef<HTMLDivElement>(null);
+  // Debounce search to avoid too many API calls
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      if (searchTerm.trim()) {
+        performSearch(searchTerm);
+      } else {
+        setSearchResults([]);
+      }
+    }, 500); // 500ms debounce delay
 
-//   useEffect(() => {
-//     const handleClickOutside = (event: MouseEvent) => {
-//       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-//         setResults([]);
-//       }
-//     };
+    return () => clearTimeout(timerId);
+  }, [searchTerm]);
 
-//     document.addEventListener('mousedown', handleClickOutside);
-//     return () => document.removeEventListener('mousedown', handleClickOutside);
-//   }, []);
+  const performSearch = async (term: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await searchArtists(term);
+      if (error) {
+        setError(error);
+      } else {
+        setSearchResults(data);
+      }
+    } catch (err) {
+      setError('Failed to fetch search results');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-//   useEffect(() => {
-//     if (!query.trim()) {
-//       setResults([]);
-//       return;
-//     }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
-//     const searchDelay = setTimeout(async () => {
-//       try {
-//         setIsLoading(true);
-//         setError(null);
-        
-//         let data;
-//         if (activeTab === 'artists') {
-//           data = await searchArtists(query);
-//         } else {
-//           data = await getArtistsTrack(query);
-//         }
-        
-//         setResults(data.slice(0, 8)); // Limit to 8 results
-//       } catch (err) {
-//         setError(err instanceof Error ? err.message : 'Failed to fetch results');
-//         setResults([]);
-//       } finally {
-//         setIsLoading(false);
-//       }
-//     }, 500); // Debounce for 500ms
+  return (
+    <div className="search-bar-container">
+      <input
+        type="text"
+        placeholder="Search for artists..."
+        value={searchTerm}
+        onChange={handleInputChange}
+        className="search-input"
+      />
+      
+      {isLoading && <div className="loading-indicator">Searching...</div>}
+      {error && <div className="error-message">{error}</div>}
+      
+      {searchResults.length > 0 && (
+        <ul className="search-results">
+          {searchResults.map((artist) => (
+            <li key={artist.id} className="search-result-item">
+              {artist.name}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
 
-//     return () => clearTimeout(searchDelay);
-//   }, [query, activeTab]);
-
-//   const handleClear = () => {
-//     setQuery('');
-//     setResults([]);
-//   };
-
-//   const handleSelect = (item: Artist | Track) => {
-//     if ('title' in item && onTrackSelect) {
-//       onTrackSelect(item);
-//     } else if ('name' in item && onArtistSelect) {
-//       onArtistSelect(item);
-//     }
-//     setQuery('');
-//     setResults([]);
-//   };
-
-//   return (
-//     <div className="search-container" ref={searchRef}>
-//       <div className="search-bar">
-//         <FaSearch className="search-icon" />
-//         <input
-//           type="text"
-//           value={query}
-//           onChange={(e) => setQuery(e.target.value)}
-//           placeholder={placeholder}
-//           aria-label="Search"
-//         />
-//         {query && (
-//           <button className="clear-btn" onClick={handleClear} aria-label="Clear search">
-//             <FaTimes />
-//           </button>
-//         )}
-//       </div>
-
-//       <div className="search-tabs">
-//         <button
-//           className={`tab-btn ${activeTab === 'tracks' ? 'active' : ''}`}
-//           onClick={() => setActiveTab('tracks')}
-//         >
-//           Tracks
-//         </button>
-//         <button
-//           className={`tab-btn ${activeTab === 'artists' ? 'active' : ''}`}
-//           onClick={() => setActiveTab('artists')}
-//         >
-//           Artists
-//         </button>
-//       </div>
-
-//       {isLoading && <div className="search-loading">Searching...</div>}
-//       {error && <div className="search-error">{error}</div>}
-
-//       {results.length > 0 && (
-//         <div className="search-results">
-//           {results.map((item) => (
-//             <div
-//               key={'id' in item ? item.id : Math.random()}
-//               className="search-result-item"
-//               onClick={() => handleSelect(item)}
-//             >
-//               {'title' in item ? (
-//                 <>
-//                   <div className="track-info">
-//                     <div className="track-title">{item.title}</div>
-//                     <div className="track-artist">{item.artist}</div>
-//                   </div>
-//                   {item.preview_url && (
-//                     <button className="play-preview-btn">
-//                       <FaPlay />
-//                     </button>
-//                   )}
-//                 </>
-//               ) : (
-//                 <>
-//                   {item.image && (
-//                     <img src={item.image} alt={item.name} className="artist-image" />
-//                   )}
-//                   <div className="artist-info">
-//                     <div className="artist-name">{item.name}</div>
-//                     {item.genres && item.genres.length > 0 && (
-//                       <div className="artist-genres">
-//                         {item.genres.slice(0, 2).join(', ')}
-//                       </div>
-//                     )}
-//                   </div>
-//                 </>
-//               )}
-//             </div>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default SearchBar;
+export default SearchBar;
