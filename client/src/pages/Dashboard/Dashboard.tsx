@@ -9,6 +9,7 @@
 import { useState, useEffect } from 'react';
 import { FaPlay, FaPlus, FaMinus, FaSearch, FaShareAlt, FaTrash } from 'react-icons/fa';
 import { getArtistTracks, ARTIST_IDS } from '../../utils/apiReccomendations';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 
 interface Track {
@@ -26,6 +27,7 @@ interface Playlist {
 }
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   // State management
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [newPlaylistName, setNewPlaylistName] = useState('');
@@ -117,7 +119,8 @@ const Dashboard = () => {
   };
 
   // Playlist management
-  const deletePlaylist = (id: string) => {
+  const deletePlaylist = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     setPlaylists(playlists.filter(playlist => playlist.id !== id));
   };
 
@@ -163,14 +166,18 @@ const Dashboard = () => {
           <div className="playlists-grid">
             {filteredPlaylists.length > 0 ? (
               filteredPlaylists.map((playlist) => (
-                <div key={playlist.id} className="playlist-card">
+                <div 
+                  key={playlist.id} 
+                  className="playlist-card"
+                  onClick={() => navigate(`/my-playlists/${playlist.id}`)}
+                >
                   <div className="playlist-header">
                     <h3>{playlist.name}</h3>
                     <div className="playlist-meta">
                       <span>{playlist.tracks.length} songs</span>
                       <button
                         className="delete-btn"
-                        onClick={() => deletePlaylist(playlist.id)}
+                        onClick={(e) => deletePlaylist(playlist.id, e)}
                         aria-label="Delete playlist"
                       >
                         <FaTrash />
