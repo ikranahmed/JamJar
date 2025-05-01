@@ -70,7 +70,7 @@ const Dashboard = () => {
     
     try {
       const response = await getArtistTracks(ARTIST_IDS[artist]);
-      
+      console.log('Fetched tracks:', response);
       if (response.error || !response.data) {
         throw new Error(response.error || 'No tracks received from API');
       }
