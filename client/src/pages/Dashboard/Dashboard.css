@@ -345,13 +345,13 @@
 
 /* Artist Button Colors */
 .artist-buttons button:nth-child(1) { /* Bruno Mars */
-  background: linear-gradient(45deg, #ff5f6d, #ffc371);
+  background: linear-gradient(45deg, #120eeb, #770e7c);
 }
 .artist-buttons button:nth-child(2) { /* Green Day */
-  background: linear-gradient(45deg, #00b09b, #96c93d);
+  background: linear-gradient(45deg, #2d5c7f, #89fd82);
 }
 .artist-buttons button:nth-child(3) { /* Taylor Swift */
-  background: linear-gradient(45deg, #c471f5, #fa71cd);
+  background: linear-gradient(45deg, #c471f5, #a6133f);
 }
 
 .artist-buttons button:hover {
