@@ -64,8 +64,8 @@ const resolvers: IResolvers = {
   
     playlists: async (_parent, _args, context) => {
       if (!context.user) throw new Error('Not authenticated');
-      const user = await User.findById(context.user.id).populate('playlists');
-      return user?.playlists || [];
+      const playlists = await PlaylistModel.find({ user: context.user.userId }).populate('songs');
+      return playlists;
     },
   
     playlist: async (_parent, args: { id: string }) => {
@@ -119,17 +119,22 @@ const resolvers: IResolvers = {
         user: user.userId, // Check this value
     });
 
-      try {
+    try {
+        const founduser = await UserModel.findById(context.user.userId).select('username');
+    
+        if (!founduser) throw new Error('User not found');
+
         const newPlaylist = await PlaylistModel.create({
           name: input.name,
           songs: input.songs || [],
           user: user.userId,
         });
 
-        const founduser = await UserModel.findById(context.user.userId).select('username');
-
-        if (!founduser) throw new Error('User not found');
-        
+        await UserModel.findByIdAndUpdate(
+          context.user.userId,
+          { $addToSet: { playlists: newPlaylist._id } },
+          { new: true }
+        );
 
         return {
           name: newPlaylist.name,

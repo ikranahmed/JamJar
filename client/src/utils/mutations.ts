@@ -7,7 +7,7 @@ export const LOGIN_USER = gql`
     token
     user {
       email
-      id
+      _id
       username
     }
   }
@@ -19,7 +19,7 @@ mutation AddUser($input: AddUserInput!) {
   addUser(input: $input) {
     token
     user {
-      id
+      _id
       username
       email
     }
@@ -70,11 +70,19 @@ mutation AddUser($input: AddUserInput!) {
 //   }
 // `;
 
-// export const CREATE_PLAYLIST = gql`
-//   mutation CreatePlaylist($name: String!) {
-//     createPlaylist(name: $name) {
-//       _id
-//       name
-//     }
-//   }
-// `;
+export const CREATE_PLAYLIST = gql`
+ mutation AddPlaylist($input: PlaylistInput!) {
+  addPlaylist(input: $input) {
+    name
+    songs {
+      title
+      artist
+      duration
+      link
+    }
+    user {
+      username
+    }
+  }
+}
+`;

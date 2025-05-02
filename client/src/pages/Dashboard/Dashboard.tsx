@@ -1,15 +1,10 @@
-
-//import { useState } from 'react';
-// import { useQuery } from '@apollo/client';
-// import { GET_PLAYLISTS } from '../../utils/queries';
-// import { FaPlay, FaPlus, FaSearch, FaShareAlt } from 'react-icons/fa';
-// import { getPredefinedArtistTracks, ARTIST_IDS, Track } from '../../utils/apiReccomendations';
-// import './Dashboard.css';
-
 import { useState, useEffect } from 'react';
 import { FaPlay, FaPlus, FaMinus, FaSearch, FaShareAlt, FaTrash } from 'react-icons/fa';
 import { getArtistsTrack, ARTIST_IDS } from '../../utils/apiReccomendations';
 import { useNavigate } from 'react-router-dom';
+import { useMutation, useQuery } from '@apollo/client';
+import { CREATE_PLAYLIST } from '../../utils/mutations';
+import { GET_PLAYLISTS } from '../../utils/queries';
 import './Dashboard.css';
 import type { Track } from '../../utils/apiReccomendations';
 import TrackCard from '../../components/TrackCard/TrackCard';
@@ -21,13 +16,13 @@ import TrackCard from '../../components/TrackCard/TrackCard';
 interface Playlist {
   id: string;
   name: string;
-  tracks: Track[];
+  songs: Track[];
 }
 
 const Dashboard = () => {
-  const navigate = useNavigate();
+  
   // State management
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  // const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedArtist, setSelectedArtist] = useState<keyof typeof ARTIST_IDS | null>(null);
@@ -35,6 +30,11 @@ const Dashboard = () => {
   const [isLoadingTracks, setIsLoadingTracks] = useState(false);
   const [trackError, setTrackError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const {loading, data, error} = useQuery(GET_PLAYLISTS);
+  const playlists: Playlist[] = data?.playlists || [];
+
+  const [addPlaylist] = useMutation(CREATE_PLAYLIST)
   // const { loading, error, data } = useQuery(GET_PLAYLISTS);
   // const playlists = data?.playlists || [];
   // const setPlaylists = () => {
@@ -42,17 +42,17 @@ const Dashboard = () => {
   // }
 
   // Load playlists from localStorage on component mount
-  useEffect(() => {
-    const savedPlaylists = localStorage.getItem('playlists');
-    if (savedPlaylists) {
-      setPlaylists(JSON.parse(savedPlaylists));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const savedPlaylists = localStorage.getItem('playlists');
+  //   if (savedPlaylists) {
+  //     setPlaylists(JSON.parse(savedPlaylists));
+  //   }
+  // }, []);
 
   // Save playlists to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem('playlists', JSON.stringify(playlists));
-  }, [playlists]);
+  // useEffect(() => {
+  //   localStorage.setItem('playlists', JSON.stringify(playlists));
+  // }, [playlists]);
 
   // Track selection handlers
   const toggleTrackSelection = (trackId: string) => {
@@ -72,11 +72,11 @@ const Dashboard = () => {
     setSelectedArtist(artist);
     setIsLoadingTracks(true);
     setTrackError(null);
-    
+
     try {
       const response = await getArtistsTrack(ARTIST_IDS[artist]);
       if (!response.data) {
-        throw new Error( 'No tracks received from API');
+        throw new Error('No tracks received from API');
       }
       const tracksData = response.data.map((track: Track) => ({ ...track, selected: false }));
       setTracks(tracksData);
@@ -89,26 +89,31 @@ const Dashboard = () => {
   };
 
   // Playlist creation
-  const handleCreatePlaylist = () => {
-    const selectedTracks = tracks.filter(track => track.selected);
+  const handleCreatePlaylist = async () => {
+    let selectedTracks = tracks.filter(track => track.selected);
     
+
     if (!newPlaylistName.trim()) {
       setTrackError('Please enter a playlist name');
       return;
     }
-    
+
     if (selectedTracks.length === 0) {
       setTrackError('Please select at least one track');
       return;
     }
-    
-    const newPlaylist: Playlist = {
-      id: Date.now().toString(),
-      name: newPlaylistName,
-      tracks: selectedTracks.map(({ selected, ...rest }) => rest)
-    };
+
+    const songs = selectedTracks.map(track => ({
+      title: track.title,
+      artist: track.artist,
+      duration: track.duration,
+      link: track.link
+    }));
+    const { data } = await addPlaylist({
+      variables: { input: { name: newPlaylistName, songs: songs } }
+    });
     // You'll need to call the mutation to save the playlist to the server here
-    setPlaylists([...playlists, newPlaylist]);
+   
     setShowCreateForm(false);
     resetCreateForm();
   };
@@ -123,14 +128,14 @@ const Dashboard = () => {
   // Playlist management
   const deletePlaylist = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setPlaylists(playlists.filter(playlist => playlist.id !== id));
+    // setPlaylists(playlists.filter(playlist => playlist.id !== id));
   };
 
   // Filter playlists based on search query
   const filteredPlaylists = playlists.filter(playlist =>
     playlist.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    playlist.tracks.some(track =>
-      track.trackTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    playlist.songs.some(track =>
+      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       track.artist.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
@@ -162,15 +167,15 @@ const Dashboard = () => {
           <div className="playlists-grid">
             {filteredPlaylists.length > 0 ? (
               filteredPlaylists.map((playlist) => (
-                <div 
-                  key={playlist.id} 
+                <div
+                  key={playlist.id}
                   className="playlist-card"
-                  // onClick={() => navigate(`/my-playlists/${playlist.id}`)} // the plan is to not create a playlist page
+                // onClick={() => navigate(`/my-playlists/${playlist.id}`)} // the plan is to not create a playlist page
                 >
                   <div className="playlist-header">
                     <h3>{playlist.name}</h3>
                     <div className="playlist-meta">
-                      <span>{playlist.tracks.length} songs</span>
+                      <span>{playlist.songs.length} songs</span>
                       <button
                         className="delete-btn"
                         onClick={(e) => deletePlaylist(playlist.id, e)}
@@ -181,10 +186,10 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <ul className="songs-list">
-                    {playlist.tracks.map((track) => (
-                      <li key={track.id} className="song-item">
+                    {playlist.songs.map((track) => (
+                      <li key={track._id} className="song-item">
                         <div className="song-info">
-                          <span className="song-title">{track.trackTitle}</span>
+                          <span className="song-title">{track.title}</span>
                           <span className="song-artist">{track.artist}</span>
                           {track.duration && (
                             <span className="song-duration">
@@ -195,7 +200,7 @@ const Dashboard = () => {
                         <button
                           className="play-btn"
                           onClick={() => playTrack(track.link)}
-                          aria-label={`Play ${track.trackTitle}`}
+                          aria-label={`Play ${track.title}`}
                         >
                           <FaPlay />
                         </button>
@@ -232,7 +237,7 @@ const Dashboard = () => {
                 onChange={(e) => setNewPlaylistName(e.target.value)}
                 autoFocus
               />
-              
+
               <div className="artist-selection">
                 <h3>Select an Artist</h3>
                 <div className="artist-buttons">
@@ -248,7 +253,7 @@ const Dashboard = () => {
                   ))}
                 </div>
               </div>
-              
+
               {isLoadingTracks && (
                 <div className="loading">
                   <div className="spinner"></div>
@@ -279,7 +284,7 @@ const Dashboard = () => {
                     {tracks.map((track) => (
                       <li key={track.id} className={`song-item ${track.selected ? 'selected' : ''}`}>
                         <div className="song-info">
-                          <span className="song-title">{track.trackTitle}</span>
+                          <span className="song-title">{track.title}</span>
                           <span className="song-artist">{track.artist}</span>
                           {track.duration && (
                             <span className="song-duration">
@@ -291,7 +296,7 @@ const Dashboard = () => {
                           <button
                             className="play-btn"
                             onClick={() => playTrack(track.link)}
-                            aria-label={`Play ${track.trackTitle}`}
+                            aria-label={`Play ${track.title}`}
                           >
                             <FaPlay />
                           </button>

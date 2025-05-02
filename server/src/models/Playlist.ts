@@ -9,6 +9,7 @@ export interface Song {
 
 
 export interface PlaylistDocument extends Document {
+    _id: Schema.Types.ObjectId;
     name: string;
     songs: Song[];
     user: Schema.Types.ObjectId;
@@ -32,7 +33,7 @@ const songSchema = new Schema<Song>({
 const playlistSchema = new Schema<PlaylistDocument>({
     name: { type: String, required: true },
     songs: [songSchema],
-    user: { type: Schema.Types.ObjectId, ref: 'UserModel', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
 

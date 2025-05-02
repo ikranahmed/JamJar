@@ -1,17 +1,20 @@
 const typeDefs = `
   type User {
+     _id: ID!
     username: String!
     email: String!
     playlists: [Playlist]
   }
 
   type Playlist {
+    id: ID!
     name: String!
     songs: [Song]
     user: User!
   }
 
   type Song {
+    _id: ID!
     title: String!
     artist: String!
     duration: Int
