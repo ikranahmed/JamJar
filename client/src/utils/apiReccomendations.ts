@@ -1,21 +1,12 @@
+import axios from 'axios';
 
 export interface Track {
-    id: string;
-    trackTitle: string;
-    artist: string;
-    duration?: number;
-    link?: string;
+  id: string;
+  trackTitle: string;
+  artist: string;
+  duration?: number;
+  link?: string;
 }
-
-export interface ApiResponse {
-    content: Track[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-}
-
-
 
 // Add these interfaces at the top of the file
 export interface Artist {
@@ -32,7 +23,7 @@ export const ARTIST_IDS = {
 
     // Add other track properties you expect from the API
 
-export async function searchArtists(artist: string): Promise<ApiResponse> {
+export async function searchArtists(artist: string): Promise<any> {
     try {
         const url = new URL("https://api.reccobeats.com/v1/artist/search");
         url.searchParams.append("searchText", artist);
@@ -51,20 +42,70 @@ export async function searchArtists(artist: string): Promise<ApiResponse> {
     }
 }
 
-export async function getArtistsTrack(artistID: string): Promise<ApiResponse> {
-    try {
-        const url = new URL(`https://api.reccobeats.com/v1/artist/${artistID}/track`);
-        url.searchParams.append("size", "10");
+export async function getArtistsTrack(artistId: string): Promise<any> {
+  try {
+    const response = await axios.get(`https://api.reccobeats.com/v1/artist/${artistId}/track`, {
+      params: { size: 50 },
+      headers: { 'Accept': 'application/json' },
+      timeout: 5000
+    });
 
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+    console.log('Full API Response:', response); // Debug log
 
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error(error);
-        throw error;
+    // Extract the actual tracks data based on the API's response structure
+    let tracksData = response.data.content;
+    console.log('Raw Tracks Data:', tracksData);
+    console.log('tracking data ID', tracksData[0].id)
+    // Debug log
+    // If the API returns an object with a 'data' property
+    if (response.data && typeof response.data === 'object' && !Array.isArray(response.data)) {
+      // Try common response structures
+      if (Array.isArray(response.data.tracks)) {
+        tracksData = response.data.tracks;
+      } else if (Array.isArray(response.data.items)) {
+        tracksData = response.data.items;
+      } else if (Array.isArray(response.data.data)) {
+        tracksData = response.data.data;
+      } else {
+        // If we can't find an array, try to use the object values
+        tracksData = Object.values(response.data.content);
+      }
     }
+    console.log('testing data property', response.data.content)
+    // Final check if we have an array
+    if (!Array.isArray(tracksData)) {
+      throw new Error(`Expected array but got ${typeof tracksData}`);
+    }
+
+    // Transform the tracks to our format
+    const tracks = tracksData.map((item: any) => ({
+      id: item.id, 
+    //   || Math.random().toString(36).substr(2, 9),
+      trackTitle: item.trackTitle || item.name || 'Unknown Track',
+      artist: item.artist || item.artists?.map((a: any) => a.name).join(', ') || 'Unknown Artist',
+      duration: item.durationMs || 0,
+      link: item.external_urls?.spotify || item.preview_url || item.href || `#${item.id}` 
+    }));
+    console.log('Transformed Tracks:', tracks);
+    console.log('')
+    return { 
+      data: tracks,
+      status: response.status 
+    };
+  } catch (error: any) {
+    console.error('API Error Details:', {
+      message: error.message,
+      response: error.response?.data,
+      config: error.config
+    });
+    
+    return {
+      error: error.response?.data?.message || 
+             error.response?.data?.error || 
+             error.message || 
+             'Failed to fetch tracks',
+      status: error.response?.status || 500
+    };
+  }
 }
+
