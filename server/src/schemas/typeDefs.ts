@@ -26,6 +26,8 @@ const typeDefs = `
   type Query {
     user(username: String!): User
     me: User
+    songs: [Song]
+    song(title: String!): Song
     playlists: [Playlist]
     playlist(playlistId: ID!): Playlist
   }
@@ -35,8 +37,8 @@ const typeDefs = `
     login(email: String!, password: String!): AuthPayload
     addPlaylist(input: PlaylistInput!): Playlist
     removePlaylist(playlistName: String!): Playlist
-    addSong(playlistName: String!, songInput: SongInput!): Song
-    removeSong(playlistName: String!, songInput: SongInput!): Song
+    addSong(playlistName: String!, songInput: SongInput!): Playlist
+    removeSong(playlistName: String!, songInput: SongInput!): Playlist
   }
 
   input AddUserInput {

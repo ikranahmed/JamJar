@@ -37,6 +37,23 @@ const resolvers: IResolvers = {
       if (!user) throw new Error('User not found');
       return user;
     },
+
+    song: async (_parent, args: { title: string }) => {
+      const song = await PlaylistModel.findOne({ 'songs.title': args.title }, { 'songs.$': 1 });
+      if (!song || !song.songs || song.songs.length === 0) {
+          throw new Error('Song not found');
+      }
+      const foundSong = song.songs[0];
+      if (!foundSong.title) {
+          throw new Error('Song title is missing');
+      }
+      return {
+        title: foundSong.title,
+        artist: foundSong.artist,
+        duration: foundSong.duration,
+        link: foundSong.link,
+    };
+  },
   
     me: async (_parent, _args, context) => {
       if (!context.user) throw new Error('Not authenticated');
@@ -106,10 +123,10 @@ const resolvers: IResolvers = {
         const newPlaylist = await PlaylistModel.create({
           name: input.name,
           songs: input.songs || [],
-          user: user.userID,
+          user: user.userId,
         });
 
-        const founduser = await UserModel.findById(context.user._id).select('username');
+        const founduser = await UserModel.findById(context.user.userId).select('username');
 
         if (!founduser) throw new Error('User not found');
         
@@ -144,10 +161,11 @@ const resolvers: IResolvers = {
 
       try {
         const updatedPlaylist = await PlaylistModel.findOneAndUpdate(
-          { user: context.user._id, name: playlistName },
+          { user: context.user.userId, name: playlistName },
           { $push: { songs: songInput } },
           { new: true }
         );
+        console.log('Updated Playlist:', updatedPlaylist);
 
         if (!updatedPlaylist) {
           console.error('Playlist not found or user does not have permission to modify it');
@@ -169,7 +187,7 @@ const resolvers: IResolvers = {
 
       try {
         const updatedPlaylist = await PlaylistModel.findOneAndUpdate(
-          { user: context.user._id },
+          { user: context.user.userId },
           { $pull: { songs: songInput } },
           { new: true }
         );
@@ -195,7 +213,7 @@ const resolvers: IResolvers = {
       try {
         const deletedPlaylist = await PlaylistModel.findOneAndDelete({
           name: playlistName,
-          user: context.user._id,
+          user: context.user.userId,
         });
 
         if (!deletedPlaylist) {

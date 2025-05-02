@@ -32,7 +32,7 @@ const songSchema = new Schema<Song>({
 const playlistSchema = new Schema<PlaylistDocument>({
     name: { type: String, required: true },
     songs: [songSchema],
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'UserModel', required: true },
 });
 
 
