@@ -12,7 +12,6 @@ const PlaylistView = () => {
   const { loading, error, data } = useQuery(GET_PLAYLIST, {
     variables: { playlistId },
   });
-  csvscs
   // const [removeSong] = useMutation(REMOVE_SONG_FROM_PLAYLIST, {
   //   refetchQueries: [{ query: GET_MY_PLAYLIST, variables: { playlistId } }]
   // });
