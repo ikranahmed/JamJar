@@ -29,7 +29,7 @@ const router = createBrowserRouter([
           element: <Signup />
         },
         {
-          path: '/playlists/:playlistId',
+          path: '/my-playlists/:playlistId',
           element: <MyPlaylistPage />
         },
     ],
