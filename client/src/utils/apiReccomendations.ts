@@ -81,7 +81,7 @@ export async function getArtistsTrack(artistId: string): Promise<any> {
     const tracks = tracksData.map((item: any) => ({
       id: item.id, 
     //   || Math.random().toString(36).substr(2, 9),
-      title: item.trackTitle || item.name || 'Unknown Track',
+      trackTitle: item.trackTitle || item.name || 'Unknown Track',
       artist: item.artist || item.artists?.map((a: any) => a.name).join(', ') || 'Unknown Artist',
       duration: item.durationMs || 0,
       link: item.external_urls?.spotify || item.preview_url || item.href || `#${item.id}` 

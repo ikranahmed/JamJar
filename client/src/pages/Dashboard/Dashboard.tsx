@@ -65,12 +65,11 @@ const Dashboard = () => {
     
     try {
       const response = await getArtistsTrack(ARTIST_IDS[artist]);
-      
-       if (!response.content) {
+      if (!response.data) {
         throw new Error( 'No tracks received from API');
       }
-
-      setTracks(response.content.map(track => ({ ...track, selected: false })));
+      const tracksData = response.data.map((track: Track) => ({ ...track, selected: false }));
+      setTracks(tracksData);
     } catch (err) {
       setTrackError(err instanceof Error ? err.message : 'Failed to load tracks');
       setTracks([]);
