@@ -12,6 +12,11 @@ import { getArtistsTrack, ARTIST_IDS } from '../../utils/apiReccomendations';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import type { Track } from '../../utils/apiReccomendations';
+import TrackCard from '../../components/TrackCard/TrackCard';
+// You'll need to read the playlists with the useQuery
+// import { useQuery } from '@apollo/client';
+// import { GET_PLAYLISTS } from '../../utils/queries';
+// You'll need to import the mutation for creating and deleting playlists
 
 interface Playlist {
   id: string;
@@ -30,6 +35,11 @@ const Dashboard = () => {
   const [isLoadingTracks, setIsLoadingTracks] = useState(false);
   const [trackError, setTrackError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  // const { loading, error, data } = useQuery(GET_PLAYLISTS);
+  // const playlists = data?.playlists || [];
+  // const setPlaylists = () => {
+  //   return null;
+  // }
 
   // Load playlists from localStorage on component mount
   useEffect(() => {
@@ -97,7 +107,7 @@ const Dashboard = () => {
       name: newPlaylistName,
       tracks: selectedTracks.map(({ selected, ...rest }) => rest)
     };
-    
+    // You'll need to call the mutation to save the playlist to the server here
     setPlaylists([...playlists, newPlaylist]);
     setShowCreateForm(false);
     resetCreateForm();
@@ -114,12 +124,6 @@ const Dashboard = () => {
   const deletePlaylist = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setPlaylists(playlists.filter(playlist => playlist.id !== id));
-  };
-
-  const playTrack = (link?: string) => {
-    if (link?.startsWith('http')) {
-      window.open(link, '_blank');
-    }
   };
 
   // Filter playlists based on search query
@@ -161,7 +165,7 @@ const Dashboard = () => {
                 <div 
                   key={playlist.id} 
                   className="playlist-card"
-                  onClick={() => navigate(`/my-playlists/${playlist.id}`)}
+                  // onClick={() => navigate(`/my-playlists/${playlist.id}`)} // the plan is to not create a playlist page
                 >
                   <div className="playlist-header">
                     <h3>{playlist.name}</h3>
