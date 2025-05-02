@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 export interface Track {
-  id: string;
-  trackTitle: string;
+  _id: string;
+  id: string; // Assuming the API returns an 'id' field for each track
+  title: string;
   artist: string;
   duration?: number;
   link?: string;
@@ -81,7 +82,7 @@ export async function getArtistsTrack(artistId: string): Promise<any> {
     const tracks = tracksData.map((item: any) => ({
       id: item.id, 
     //   || Math.random().toString(36).substr(2, 9),
-      trackTitle: item.trackTitle || item.name || 'Unknown Track',
+      title: item.trackTitle || item.name || 'Unknown Track',
       artist: item.artist || item.artists?.map((a: any) => a.name).join(', ') || 'Unknown Artist',
       duration: item.durationMs || 0,
       link: item.external_urls?.spotify || item.preview_url || item.href || `#${item.id}` 

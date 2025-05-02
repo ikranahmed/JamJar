@@ -9,6 +9,7 @@ export interface Song {
 
 
 export interface PlaylistDocument extends Document {
+    _id: Schema.Types.ObjectId;
     name: string;
     songs: Song[];
     user: Schema.Types.ObjectId;
