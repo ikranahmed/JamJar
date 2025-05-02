@@ -94,16 +94,25 @@ const resolvers: IResolvers = {
         throw new Error('You need to be logged in to add a playlist!');
       }
 
+      console.log('Context User:', context.user);
+      const user = context.user;
+      console.log('Creating new playlist with data:', {
+        name: input.name,
+        songs: input.songs || [],
+        user: user.userId, // Check this value
+    });
+
       try {
         const newPlaylist = await PlaylistModel.create({
           name: input.name,
           songs: input.songs || [],
-          user: context.user._id,
+          user: user.userID,
         });
 
-        const user = await UserModel.findById(context.user._id).select('username');
+        const founduser = await UserModel.findById(context.user._id).select('username');
 
-        if (!user) throw new Error('User not found');
+        if (!founduser) throw new Error('User not found');
+        
 
         return {
           name: newPlaylist.name,
@@ -114,7 +123,7 @@ const resolvers: IResolvers = {
             link: song.link ?? '',
           })),
           user: {
-            username: user.username,
+            username: founduser.username,
           },
         };
       } catch (error) {

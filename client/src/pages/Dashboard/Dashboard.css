@@ -27,21 +27,34 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  background: rgba(18, 18, 18, 0.95);
+  padding: 15px 25px;
+  background: rgba(18, 18, 18, 0.98);
   position: sticky;
   top: 0;
-  z-index: 10;
-  backdrop-filter: blur(10px);
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .dashboard-header h1 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 700;
   background: linear-gradient(90deg, #6e3aff, #a45deb);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-header h1::before {
+  content: '🎵';
+  margin-right: 10px;
+  font-size: 1.2rem;
+  opacity: 0.8;
 }
 
 /* Content Area */
@@ -298,6 +311,156 @@
   box-shadow: 0 0 20px rgba(110, 58, 255, 0.3);
 }
 
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  text-align: center;
+  color: white;
+  background: linear-gradient(90deg, #6e3aff, #a45deb);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #383838;
+  background: #121212;
+  color: white;
+  font-size: 0.95rem;
+}
+
+.modal-content input:focus {
+  outline: none;
+  border-color: #6e3aff;
+  box-shadow: 0 0 0 2px rgba(110, 58, 255, 0.3);
+}
+
+/* Artist Selection Buttons */
+.artist-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.artist-buttons button {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Artist Button Colors */
+.artist-buttons button:nth-child(1) { /* Bruno Mars */
+  background: linear-gradient(45deg, #120eeb, #770e7c);
+}
+.artist-buttons button:nth-child(2) { /* Green Day */
+  background: linear-gradient(45deg, #2d5c7f, #89fd82);
+}
+.artist-buttons button:nth-child(3) { /* Taylor Swift */
+  background: linear-gradient(45deg, #c471f5, #a6133f);
+}
+
+.artist-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.artist-buttons button.active {
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Track Selection Area */
+.track-preview {
+  margin: 15px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.track-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.track-actions button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: #383838;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.track-actions button:hover {
+  background: #6e3aff;
+}
+
+.track-actions span {
+  font-size: 0.85rem;
+  color: #b3b3b3;
+  display: flex;
+  align-items: center;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-btn, .create-btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn {
+  background: transparent;
+  color: white;
+  border: 1px solid #555;
+}
+
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.create-btn {
+  background: linear-gradient(45deg, #6e3aff, #a45deb);
+  color: white;
+  border: none;
+}
+
+.create-btn:hover {
+  background: linear-gradient(45deg, #5a2ae0, #8a4ad8);
+  box-shadow: 0 5px 15px rgba(110, 58, 255, 0.4);
+}
+
+.create-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .playlists-grid {
@@ -332,4 +495,69 @@
     flex-direction: column;
     gap: 5px;
   }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.playlist-card {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Spotify Play Button */
+.spotify-play-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1DB954;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.spotify-play-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(29, 185, 84, 0.7);
+}
+
+/* Add these new styles */
+.playlist-card {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.playlist-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.delete-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.delete-btn:hover {
+  background: rgba(255, 0, 0, 0.7);
 }

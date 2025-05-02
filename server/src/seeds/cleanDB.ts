@@ -1,4 +1,4 @@
-import {Playlistmodel, User} from '../models/index.js';
+import {Playlistmodel, User} from '../models';
 
 
 export default async () => {
