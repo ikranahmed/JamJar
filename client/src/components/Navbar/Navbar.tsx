@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaHome, FaPlus, FaSearch, FaUser } from 'react-icons/fa';
 import { FiLogOut, FiLogIn  } from "react-icons/fi";
 import { useLocation, useNavigate } from 'react-router-dom';
-import './NavBar.css';
+import './Navbar.css';
 import auth from '../../utils/auth';
 
 const NavBar = () => {
