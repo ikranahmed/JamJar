@@ -1,5 +1,4 @@
-import React from 'react';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 // import { GET_MY_PLAYLIST, REMOVE_SONG_FROM_PLAYLIST } from '../../utils/mutations';
 import { GET_PLAYLIST } from '../../utils/queries';
 import { FaPlay, FaTrash, FaShareAlt } from 'react-icons/fa';
@@ -51,6 +50,7 @@ const PlaylistView = () => {
 
   const handleRemoveSong = (songId: string) => {
     // removeSong({ variables: { playlistId, songId } });
+    console.log('Removing song:', songId);
   };
 
   const handleSharePlaylist = () => {
@@ -68,7 +68,7 @@ const PlaylistView = () => {
         <h1>Playlist Pal</h1>
         <nav>
           <button onClick={() => navigate('/playlists')}>Playlists</button>
-          <button onClick={() => Auth.logout()}>Logout</button>
+          {/* <button onClick={() => Auth.logout()}>Logout</button> */}
         </nav>
       </header>
 
