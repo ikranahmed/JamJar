@@ -184,7 +184,7 @@ const resolvers: IResolvers = {
       }
     },
 
-    removeSong: async (_parent, { songInput }: { songInput: SongInput }, context: any) => {
+    removeSong: async (_parent, { playlistId, songId }: { playlistId: string, songId: string }, context: any) => {
       if (!context.user) {
         console.error('User not authenticated');
         throw new Error('You need to be logged in to remove a song!');
@@ -192,8 +192,8 @@ const resolvers: IResolvers = {
 
       try {
         const updatedPlaylist = await PlaylistModel.findOneAndUpdate(
-          { user: context.user.userId },
-          { $pull: { songs: songInput } },
+          { _id: playlistId, user: context.user.userId },
+          { $pull: { songs: { _id: songId } } },
           { new: true }
         );
 

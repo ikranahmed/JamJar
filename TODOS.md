@@ -3,7 +3,7 @@ Hey char so i just NOW got out of the class with aaron at midnight. But for your
 
 KeChara ToDo for tutoring session:
 
--get delete playlist button to work with graphql
+
 - add delete button to song ( when clicked its going to call the REMOVE_SONG mutation
 
 

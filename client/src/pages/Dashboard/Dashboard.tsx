@@ -2,7 +2,7 @@ import { useState} from 'react';
 import { FaPlay, FaPlus, FaMinus, FaSearch, FaShareAlt, FaTrash } from 'react-icons/fa';
 import { getArtistsTrack, ARTIST_IDS } from '../../utils/apiReccomendations';
 import { useMutation, useQuery } from '@apollo/client';
-import { CREATE_PLAYLIST, REMOVE_PLAYLIST} from '../../utils/mutations';
+import { CREATE_PLAYLIST, REMOVE_PLAYLIST, REMOVE_SONG} from '../../utils/mutations';
 import { GET_PLAYLISTS } from '../../utils/queries';
 import './Dashboard.css';
 import type { Track } from '../../utils/apiReccomendations';
@@ -34,6 +34,7 @@ const Dashboard = () => {
 
   const [addPlaylist] = useMutation(CREATE_PLAYLIST)
   const [removePlaylist] = useMutation(REMOVE_PLAYLIST);
+  const [removeSong] = useMutation(REMOVE_SONG);
   // const { loading, error, data } = useQuery(GET_PLAYLISTS);
   // const playlists = data?.playlists || [];
   // const setPlaylists = () => {
@@ -166,6 +167,18 @@ const Dashboard = () => {
     });
   }
 
+ async function deleteSong(playlistId: string, songId: string) {
+    try {
+      await removeSong({
+        variables: { playlistId, songId }
+      });
+      refetch(); // Refetch playlists after deletion
+    } catch (error) {
+      console.error('Error deleting song:', error);
+    }
+  
+ }
+
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
@@ -230,6 +243,13 @@ const Dashboard = () => {
                         >
                           <FaPlay />
                         </button>
+                        <button
+                            className="select-btn"
+                            onClick={() => deleteSong(playlist.id, track._id)}
+                            aria-label="Remove from playlist"
+                          >
+                          <FaMinus />
+                          </button>
                       </li>
                     ))}
                   </ul>

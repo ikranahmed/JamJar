@@ -26,35 +26,7 @@ mutation AddUser($input: AddUserInput!) {
   }
 }
 `;
-// export const GET_MY_PLAYLISTS = gql`
-//   query GetMyPlaylists {
-//     me {
-//       _id
-//       username
-//       playlists {
-//         _id
-//         name
-//         songCount
-//         createdAt
-//       }
-//     }
-//   }
-// `;
 
-
-
-// export const REMOVE_SONG_FROM_PLAYLIST = gql`
-//   mutation RemoveSongFromPlaylist($playlistId: ID!, $songId: ID!) {
-//     removeSongFromPlaylist(playlistId: $playlistId, songId: $songId) {
-//       _id
-//       name
-//       songs {
-//         _id
-//         title
-//       }
-//     }
-//   }
-// `;
 
 export const CREATE_PLAYLIST = gql`
  mutation AddPlaylist($input: PlaylistInput!) {
@@ -79,4 +51,14 @@ mutation RemovePlaylist($removePlaylistId: ID!) {
     id
     name
   }
-}`
+}
+`;
+
+export const REMOVE_SONG = gql`
+mutation RemoveSong($playlistId: ID!, $songId: ID!) {
+  removeSong(playlistId: $playlistId, songId: $songId) {
+    id
+    name
+  }
+}
+`;

@@ -41,7 +41,7 @@ const typeDefs = `
     addPlaylist(input: PlaylistInput!): Playlist
     removePlaylist(id: ID!): Playlist
     addSong(playlistName: String!, songInput: SongInput!): Playlist
-    removeSong(playlistName: String!, songInput: SongInput!): Playlist
+    removeSong(playlistId: ID!, songId: ID!): Playlist
   }
 
   input AddUserInput {
