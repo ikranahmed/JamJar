@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaHome, FaPlus, FaSearch, FaUser } from 'react-icons/fa';
+import { FaHome, FaPlus, FaUser } from 'react-icons/fa';
 import { FiLogOut, FiLogIn  } from "react-icons/fi";
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
@@ -32,9 +32,9 @@ const NavBar = () => {
   let tabs = [
     { id: 'home', icon: <FaHome />, label: 'Home' },
     // { id: 'playlists', icon: <FaMusic />, label: 'Playlists' },
-    { id: 'search', icon: <FaSearch />, label: 'Search' },
+    // { id: 'search', icon: <FaSearch />, label: 'Search' },
     { id: 'create', icon: <FaPlus />, label: 'Create' },
-    { id: 'profile', icon: <FaUser />, label: 'Profile' },
+    // { id: 'profile', icon: <FaUser />, label: 'Profile' },
     { id: 'logout', icon: <FiLogOut />, label: 'Logout' }
   ];
 
