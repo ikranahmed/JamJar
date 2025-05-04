@@ -114,7 +114,7 @@ const Dashboard = () => {
       variables: { input: { name: newPlaylistName, songs: songs } }
     });
     // You'll need to call the mutation to save the playlist to the server here
-   
+   refetch(); // Refetch playlists after creation
     setShowCreateForm(false);
     resetCreateForm();
   };
