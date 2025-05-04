@@ -39,7 +39,7 @@ const typeDefs = `
     addUser(input: AddUserInput!): AuthPayload
     login(email: String!, password: String!): AuthPayload
     addPlaylist(input: PlaylistInput!): Playlist
-    removePlaylist(playlistName: String!): Playlist
+    removePlaylist(id: ID!): Playlist
     addSong(playlistName: String!, songInput: SongInput!): Playlist
     removeSong(playlistName: String!, songInput: SongInput!): Playlist
   }

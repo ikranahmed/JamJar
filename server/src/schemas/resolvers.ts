@@ -209,7 +209,7 @@ const resolvers: IResolvers = {
       }
     },
 
-    removePlaylist: async (_parent, { playlistName }: { playlistName: string }, context: any) => {
+    removePlaylist: async (_parent, { id }: { id: string }, context: any) => {
       if (!context.user) {
         console.error('User not authenticated');
         throw new Error('You need to be logged in to remove a playlist!');
@@ -217,7 +217,7 @@ const resolvers: IResolvers = {
 
       try {
         const deletedPlaylist = await PlaylistModel.findOneAndDelete({
-          name: playlistName,
+          _id: id,
           user: context.user.userId,
         });
 
