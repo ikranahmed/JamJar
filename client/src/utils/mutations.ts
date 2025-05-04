@@ -41,21 +41,7 @@ mutation AddUser($input: AddUserInput!) {
 //   }
 // `;
 
-// export const GET_PLAYLIST = gql`
-//   query GetPlaylist($playlistId: ID!) {
-//     playlist(playlistId: $playlistId) {
-//       _id
-//       name
-//       songs {
-//         _id
-//         title
-//         artist
-//         duration
-//         link
-//       }
-//     }
-//   }
-// `;
+
 
 // export const REMOVE_SONG_FROM_PLAYLIST = gql`
 //   mutation RemoveSongFromPlaylist($playlistId: ID!, $songId: ID!) {
@@ -86,3 +72,11 @@ export const CREATE_PLAYLIST = gql`
   }
 }
 `;
+
+export const REMOVE_PLAYLIST = gql`
+mutation RemovePlaylist($removePlaylistId: ID!) {
+  removePlaylist(id: $removePlaylistId) {
+    id
+    name
+  }
+}`

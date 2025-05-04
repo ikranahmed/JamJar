@@ -3,7 +3,7 @@ import { FaPlay, FaPlus, FaMinus, FaSearch, FaShareAlt, FaTrash } from 'react-ic
 import { getArtistsTrack, ARTIST_IDS } from '../../utils/apiReccomendations';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
-import { CREATE_PLAYLIST } from '../../utils/mutations';
+import { CREATE_PLAYLIST, REMOVE_PLAYLIST} from '../../utils/mutations';
 import { GET_PLAYLISTS } from '../../utils/queries';
 import './Dashboard.css';
 import type { Track } from '../../utils/apiReccomendations';
@@ -31,10 +31,11 @@ const Dashboard = () => {
   const [trackError, setTrackError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const {loading, data, error} = useQuery(GET_PLAYLISTS);
+  const {loading, data, error, refetch} = useQuery(GET_PLAYLISTS);
   const playlists: Playlist[] = data?.playlists || [];
 
   const [addPlaylist] = useMutation(CREATE_PLAYLIST)
+  const [removePlaylist] = useMutation(REMOVE_PLAYLIST);
   // const { loading, error, data } = useQuery(GET_PLAYLISTS);
   // const playlists = data?.playlists || [];
   // const setPlaylists = () => {
@@ -126,9 +127,18 @@ const Dashboard = () => {
   };
 
   // Playlist management
-  const deletePlaylist = (id: string, e: React.MouseEvent) => {
+  const deletePlaylist = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     // setPlaylists(playlists.filter(playlist => playlist.id !== id));
+    try {
+      const {data} = await removePlaylist({
+        variables: { removePlaylistId: id }
+      });
+      refetch(); // Refetch playlists after deletion
+      console.log(data.removePlaylist);
+    } catch (error) {
+      console.error('Error deleting playlist:', error);
+    }
   };
 
   // Filter playlists based on search query
