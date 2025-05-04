@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { FaPlay, FaPlus, FaMinus, FaSearch, FaShareAlt, FaTrash } from 'react-icons/fa';
 import { getArtistsTrack, ARTIST_IDS } from '../../utils/apiReccomendations';
-import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
 import { CREATE_PLAYLIST, REMOVE_PLAYLIST} from '../../utils/mutations';
 import { GET_PLAYLISTS } from '../../utils/queries';
 import './Dashboard.css';
 import type { Track } from '../../utils/apiReccomendations';
-import TrackCard from '../../components/TrackCard/TrackCard';
 // You'll need to read the playlists with the useQuery
 // import { useQuery } from '@apollo/client';
 // import { GET_PLAYLISTS } from '../../utils/queries';
@@ -31,7 +29,7 @@ const Dashboard = () => {
   const [trackError, setTrackError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const {loading, data, error, refetch} = useQuery(GET_PLAYLISTS);
+  const { data, refetch} = useQuery(GET_PLAYLISTS);
   const playlists: Playlist[] = data?.playlists || [];
 
   const [addPlaylist] = useMutation(CREATE_PLAYLIST)
@@ -110,13 +108,20 @@ const Dashboard = () => {
       duration: track.duration,
       link: track.link
     }));
-    const { data } = await addPlaylist({
-      variables: { input: { name: newPlaylistName, songs: songs } }
-    });
-    // You'll need to call the mutation to save the playlist to the server here
-   refetch(); // Refetch playlists after creation
-    setShowCreateForm(false);
-    resetCreateForm();
+    try {
+     await addPlaylist({
+        variables: { input: { name: newPlaylistName, songs: songs } }
+      });
+      // You'll need to call the mutation to save the playlist to the server here
+     refetch(); // Refetch playlists after creation
+      setShowCreateForm(false);
+      resetCreateForm();
+    } catch (error) {
+      console.error('Error creating playlist:', error);
+      setTrackError('Failed to create playlist. Please try again.');
+      return;
+      
+    }
   };
 
   const resetCreateForm = () => {
@@ -149,6 +154,17 @@ const Dashboard = () => {
       track.artist.toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
+ 
+  function playTrack(link: string) {
+    if (!link) {
+      console.error('No link provided for the track');
+      return;
+    }
+    const audio = new Audio(link);
+    audio.play().catch(error => {
+      console.error('Error playing track:', error); 
+    });
+  }
 
   return (
     <div className="dashboard-container">
@@ -209,7 +225,7 @@ const Dashboard = () => {
                         </div>
                         <button
                           className="play-btn"
-                          onClick={() => playTrack(track.link)}
+                          onClick={() => playTrack(track.link || '')}
                           aria-label={`Play ${track.title}`}
                         >
                           <FaPlay />
@@ -305,7 +321,7 @@ const Dashboard = () => {
                         <div className="song-controls">
                           <button
                             className="play-btn"
-                            onClick={() => playTrack(track.link)}
+                            onClick={() => playTrack(track.link || '')}
                             aria-label={`Play ${track.title}`}
                           >
                             <FaPlay />
