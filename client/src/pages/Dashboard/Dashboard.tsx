@@ -1,4 +1,4 @@
-import { useState} from 'react';
+import { useEffect, useState} from 'react';
 import { FaPlus, FaSearch, FaShareAlt } from 'react-icons/fa';
 import { getArtistsTrack, ARTIST_IDS } from '../../utils/apiReccomendations';
 import { useMutation, useQuery } from '@apollo/client';
@@ -8,6 +8,8 @@ import './Dashboard.css';
 import type { Track } from '../../utils/apiReccomendations';
 import PlaylistCard from '../../components/Playlist Card/PlaylistCard';
 import TrackCard from '../../components/TrackCard/TrackCard';
+import auth from '../../utils/auth';
+import { useNavigate } from 'react-router-dom';
 // You'll need to read the playlists with the useQuery
 // import { useQuery } from '@apollo/client';
 // import { GET_PLAYLISTS } from '../../utils/queries';
@@ -20,7 +22,14 @@ interface Playlist {
 }
 
 const Dashboard = () => {
-  
+  // useEffect to validate that the user is logged in, if not navigate them to the login page
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!auth.loggedIn()) {
+      navigate('/login');
+    }
+  }
+  , []);
   // State management
   // const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [newPlaylistName, setNewPlaylistName] = useState('');
@@ -163,12 +172,18 @@ const Dashboard = () => {
     }
   
  }
+ const handleShareButton = () => {
+  // Implement share functionality
+  navigator.clipboard.writeText(window.location.href);
+  console.log('Playlist link copied to clipboard!');
+}
 
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
         <h1>Welcome to JamJar</h1>
-        <button className="share-btn">
+        <button onClick={handleShareButton}
+          className="share-btn">
           <FaShareAlt />
         </button>
       </header>
