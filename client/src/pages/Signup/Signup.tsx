@@ -46,7 +46,7 @@ const Signup = () => {
     };
 
     // Music-themed background video (replace with your actual video URL)
-    const backgroundVideoUrl = "https://example.com/music-background.mp4";
+    const backgroundVideoUrl = "https://https://www.youtube.com/watch?v=z6aONWHhTCU";
 
     return (
         <div className='login-container'>
