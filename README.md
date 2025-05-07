@@ -39,16 +39,18 @@ DELETE	/api/playlists/:id	Delete playlist
 MIT License
 
 
-![Alt text](image-url-or-path)
-![Alt text](image-url-or-path)
+![Alt text](./client/src/assets/Jamjarweb.png)
+![Alt text](/client/src/assets/Jamjarweb2.png)
 
-## Github Repo Link
+## Github Repo Link & Contributors
 https://github.com/ikranahmed/JamJar
+https://github.com/ikranahmed
+https://github.com/Gastons2023
+https://github.com/Zacharia-Owen
 
 ## Website Url
 https://jamjar.onrender.com/
 
 
 
-* Have a high-quality README (with unique name, description, technologies used, screenshot, and link to deployed application).
 
